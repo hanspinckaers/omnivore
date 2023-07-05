@@ -1,4 +1,4 @@
-import { ResponseError } from '@elastic/elasticsearch/lib/errors'
+import { errors } from '@elastic/elasticsearch'
 import { BuiltQuery, ESBuilder, esBuilder } from 'elastic-ts'
 import { EntityType } from '../datalayer/pubsub'
 import { BulkActionType } from '../generated/graphql'
@@ -403,7 +403,7 @@ export const updatePage = async (
     return true
   } catch (e) {
     if (
-      e instanceof ResponseError &&
+      e instanceof errors.ResponseError &&
       e.message === 'document_missing_exception'
     ) {
       console.log('page has been deleted', id)
@@ -428,7 +428,7 @@ export const deletePage = async (
     return body.deleted !== 0
   } catch (e) {
     if (
-      e instanceof ResponseError &&
+      e instanceof errors.ResponseError &&
       e.message === 'document_missing_exception'
     ) {
       console.log('page has been deleted', id)
@@ -494,7 +494,7 @@ export const getPageById = async (id: string): Promise<Page | undefined> => {
       id: body._id as string,
     } as Page
   } catch (e) {
-    if (e instanceof ResponseError && e.statusCode === 404) {
+    if (e instanceof errors.ResponseError && e.statusCode === 404) {
       console.log('page has been deleted', id)
       return undefined
     }
@@ -628,7 +628,7 @@ export const searchPages = async (
       response.body.hits.total.value,
     ]
   } catch (e) {
-    if (e instanceof ResponseError) {
+    if (e instanceof errors.ResponseError) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       console.error('failed to search pages in elastic', e.meta.body.error)
       return undefined
